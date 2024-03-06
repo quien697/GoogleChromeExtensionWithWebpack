@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  min-width: 20em;
+  min-height: 40em;
 }
 
 .App-logo {
@@ -26,6 +28,12 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.App-button {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background-color: #61dafb;
 }
 
 @keyframes App-logo-spin {

@@ -3,6 +3,16 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const handleChangeBackgroundColor = async () => {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id! },
+      func: () => {
+        document.body.style.backgroundColor = 'black';
+      }
+    });
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -18,6 +28,9 @@ function App() {
         >
           Learn React
         </a>
+        <button className="App-button" onClick={handleChangeBackgroundColor}>
+          Change Background Color
+        </button>
       </header>
     </div>
   );
