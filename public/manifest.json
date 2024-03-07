@@ -4,10 +4,12 @@
   "manifest_version": 3,
   "version": "1.0.0",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": "logo192.png"
   },
   "icons": {
     "16": "logo192.png",
+    "32": "logo192.png",
     "48": "logo192.png",
     "128": "logo192.png"
   },
@@ -17,5 +19,11 @@
     "host_permissions": [
       "https://*/*",
       "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["static/js/contentScript.bundle.js"]
+    }
   ]
 }
