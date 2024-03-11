@@ -14,7 +14,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 1. Install dependencies:
 
 ```bash
-yarn
+yarn install
 ```
 
 2. Builds the app for production to the `dist` folder.
