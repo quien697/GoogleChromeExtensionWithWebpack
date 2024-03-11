@@ -25,5 +25,8 @@
       "matches": ["<all_urls>"],
       "js": ["static/js/contentScript.bundle.js"]
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "static/js/background.bundle.js"
+  }
 }

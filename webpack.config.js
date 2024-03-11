@@ -5,6 +5,7 @@ module.exports = {
   mode: 'production',
   target: 'web',
   entry: {
+    background: './src/background/index.ts',
     contentScript: './src/content/index.tsx',
     index: './src/index.tsx'
   },
