@@ -57,10 +57,10 @@ const App: React.FC = () => {
           Change Background Color
         </button>
         <button className="App-button" onClick={handleGrabData}>
-          Grab Data
+          Grab Data from Jira
         </button>
         <button className="App-button" onClick={handleInjectComponents}>
-          Inject Components A
+          Inject New Pupop Componment
         </button>
         {issues.map(issue => (
           <p id="issues" key={issue.id}>{issue.id}</p>
