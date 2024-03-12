@@ -1,5 +1,6 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   mode: 'production',
@@ -20,7 +21,8 @@ module.exports = {
         from: path.resolve('public'),
         to: path.resolve('dist')
       }]
-    })
+    }),
+    new Dotenv()
   ],
   module: {
     rules: [

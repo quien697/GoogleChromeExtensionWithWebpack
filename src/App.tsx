@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { initializeApp } from 'firebase/app';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  getAuth,
+  signOut
+} from 'firebase/auth';
 
 interface Issue {
   id: string;
   title: string;
 }
 
+const firebaseConfig = {
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+}
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 const App: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [user, setUser] = useState("No user signed in.");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, currentWindow: true };
@@ -37,6 +55,33 @@ const App: React.FC = () => {
       setIssues(response.data);
     });
   }
+
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .catch((error) => {
+        console.log("signInWithEmailAndPassword -> error: ", error);
+      })
+  }
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        setUser("Sign-out.");
+      }).catch((error) => {
+        setUser("signOut error.");
+        console.log("Sign-out -> error: ", error);
+      });
+  }
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user.email!);
+      } else {
+        setUser("No user signed in.");
+      }
+    });
+  });
 
   return (
     <div className="App">
@@ -68,6 +113,8 @@ const App: React.FC = () => {
         <div className="App-container">
           <h3>Sign in with email and password</h3>
           <p>User: {user}</p>
+          <input type="text" placeholder="test@test.com" onChange={(e) => setEmail(e.target.value)}></input>
+          <input type="text" placeholder="123456" onChange={(e) => setPassword(e.target.value)}></input>
           <div className="buttons">
             <button className="App-button" onClick={handleLogin}>
               Login
