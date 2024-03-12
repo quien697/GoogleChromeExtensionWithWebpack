@@ -27,7 +27,7 @@ const Content: React.FC<Props> = ({ data }) => {
         <div className="issues">
           <ul>
             {data.map(item => (
-              <li id="issues" key={item.id}>{`${item.id} - ${item.title}`}</li>
+              <li key={item.id}>{`${item.id} - ${item.title}`}</li>
             ))}
           </ul>
          </div>

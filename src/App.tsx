@@ -40,32 +40,43 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button className="App-button" onClick={handleChangeBackgroundColor}>
-          Change Background Color
-        </button>
-        <button className="App-button" onClick={handleGrabData}>
-          Grab Data From Jira
-        </button>
-        <button className="App-button" onClick={handleInjectComponents}>
-          Inject New Popup Componment
-        </button>
-        {issues.map(issue => (
-          <p id="issues" key={issue.id}>{issue.id}</p>
-        ))}
-      </header>
+        <div className="App-container">
+          <h3>Change Background Color</h3>
+          <button onClick={handleChangeBackgroundColor}>
+            Change
+          </button>
+        </div>
+        <div className="App-container">
+          <h3>Grab Data from Jira</h3>
+          <button className="App-button" onClick={handleGrabData}>
+            Grab Data
+          </button>
+          <ul>
+            {issues.map(issue => (
+              <li key={issue.id}>{issue.id}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="App-container">
+          <h3>Inject New Popup Componment</h3>
+          <p>(get data before inject)</p>
+          <button className="App-button" onClick={handleInjectComponents}>
+            Inject
+          </button>
+        </div>
+        <div className="App-container">
+          <h3>Sign in with email and password</h3>
+          <p>User: {user}</p>
+          <div className="buttons">
+            <button className="App-button" onClick={handleLogin}>
+              Login
+            </button>
+            <button className="App-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </div>
     </div>
   );
 }
