@@ -3,11 +3,11 @@ import logo from './logo.svg';
 import './App.css';
 import { initializeApp } from 'firebase/app';
 import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
   getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
   signOut
-} from 'firebase/auth';
+} from 'firebase/auth/web-extension';
 
 interface Issue {
   id: string;
@@ -58,6 +58,9 @@ const App: React.FC = () => {
 
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("signInWithEmailAndPassword -> user: ", userCredential.user);
+      })
       .catch((error) => {
         console.log("signInWithEmailAndPassword -> error: ", error);
       })
