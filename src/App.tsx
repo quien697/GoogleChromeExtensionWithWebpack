@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut
-} from 'firebase/auth/web-extension';
+} from 'firebase/auth';
 
 interface Issue {
   id: string;
@@ -17,6 +17,10 @@ interface Issue {
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
   authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID
 }
 
 const app = initializeApp(firebaseConfig);
@@ -24,7 +28,7 @@ const auth = getAuth(app);
 
 const App: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [user, setUser] = useState("No user signed in.");
+  const [user, setUser] = useState("No user signed in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -78,11 +82,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user.email!);
-      } else {
-        setUser("No user signed in.");
-      }
+      setUser((user && user.uid) ? user.email! : "No user signed in");
     });
   });
 
@@ -114,19 +114,26 @@ const App: React.FC = () => {
           </button>
         </div>
         <div className="App-container">
-          <h3>Sign in with email and password</h3>
+          <h3>Sign in</h3>
           <p>User: {user}</p>
           <input type="text" placeholder="test@test.com" onChange={(e) => setEmail(e.target.value)}></input>
           <input type="text" placeholder="123456" onChange={(e) => setPassword(e.target.value)}></input>
-          <div className="buttons">
-            <button className="App-button" onClick={handleLogin}>
-              Login
+          <div className="login-buttons">
+            <button className="App-button" onClick={handleLogin} hidden={user == "No user signed in" ? false : true}>
+              Login with Email and PW
             </button>
-            <button className="App-button" onClick={handleLogout}>
+            <button className="App-button" hidden={user == "No user signed in" ? false : true}>
+              Login with Goole
+            </button>
+            <button className="App-button" hidden={user == "No user signed in" ? false : true}>
+              Login with GitHub
+            </button>
+            <button className="App-button" onClick={handleLogout} hidden={user == "No user signed in" ? true : false}>
               Logout
             </button>
           </div>
         </div>
+
     </div>
   );
 }

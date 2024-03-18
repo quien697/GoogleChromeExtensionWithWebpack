@@ -56,15 +56,8 @@
   padding: 0;
 }
 
-.App-container .buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
-.App-container .buttons button {
-  margin-left: 8px;
-  margin-right: 8px;
+.App-container .login-buttons button {
+  width: 100%;
 }
 
 .App-container input {
