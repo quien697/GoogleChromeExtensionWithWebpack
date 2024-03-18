@@ -6,7 +6,9 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  signInWithCredential,
+  GoogleAuthProvider
 } from 'firebase/auth';
 
 interface Issue {
@@ -31,6 +33,8 @@ const App: React.FC = () => {
   const [user, setUser] = useState("No user signed in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, currentWindow: true };
@@ -68,6 +72,24 @@ const App: React.FC = () => {
       .catch((error) => {
         console.log("signInWithEmailAndPassword -> error: ", error);
       })
+  }
+
+  const handleLoginWithGoogle = () => {
+    chrome.identity.getAuthToken({ interactive: true }, (token) => {
+      if (chrome.runtime.lastError || !token) {
+        console.log("handleLoginWithGoogle -> getAuthToken -> error: ", JSON.stringify(chrome.runtime.lastError));
+        return
+      }
+
+      const credential = GoogleAuthProvider.credential(null, token);
+      signInWithCredential(auth, credential)
+        .then(result => {
+          console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> result: ', result);
+        })
+        .catch(error => {
+          console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> error: ', error);
+        })
+    });
   }
 
   const handleLogout = () => {
@@ -122,7 +144,7 @@ const App: React.FC = () => {
             <button className="App-button" onClick={handleLogin} hidden={user == "No user signed in" ? false : true}>
               Login with Email and PW
             </button>
-            <button className="App-button" hidden={user == "No user signed in" ? false : true}>
+            <button className="App-button" onClick={handleLoginWithGoogle} hidden={user == "No user signed in" ? false : true}>
               Login with Goole
             </button>
             <button className="App-button" hidden={user == "No user signed in" ? false : true}>

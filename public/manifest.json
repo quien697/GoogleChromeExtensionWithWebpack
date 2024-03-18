@@ -14,7 +14,8 @@
     "128": "logo192.png"
   },
   "permissions": [
-    "scripting"
+    "scripting",
+    "identity"
   ],
     "host_permissions": [
       "https://*/*",
@@ -28,5 +29,14 @@
   ],
   "background": {
     "service_worker": "static/js/background.bundle.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline';"
+  },
+  "oauth2": {
+    "client_id": "%YOUR_CLIENT_ID%",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
   }
 }

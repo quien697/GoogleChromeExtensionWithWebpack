@@ -3,16 +3,8 @@ interface Issue {
   title: string;
 }
 
-interface DataProps {
-  event: string;
-}
-
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Background -> onInstalled");
-});
-
-chrome.action.onClicked.addListener((tab) => {
-  console.log("Background -> onClicked -> tab: ", tab);
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
