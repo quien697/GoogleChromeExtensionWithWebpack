@@ -25,14 +25,11 @@ const firebaseConfig = {
   appId: process.env.APP_ID
 }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
 const App: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [user, setUser] = useState("No user signed in");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState<string>("No user signed in");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
@@ -155,7 +152,6 @@ const App: React.FC = () => {
             </button>
           </div>
         </div>
-
     </div>
   );
 }
