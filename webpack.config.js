@@ -7,6 +7,7 @@ module.exports = {
   target: 'web',
   entry: {
     background: './src/background/index.ts',
+    offscreen: './src/offscreen/index.ts',
     contentScript: './src/content/index.tsx',
     index: './src/index.tsx'
   },

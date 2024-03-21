@@ -27,6 +27,7 @@ const firebaseConfig = {
 
 const App: React.FC = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [isPlayAudio, SetIsPlayAudio] = useState<boolean>(false); // true = is playing, otherwise false.
   const [user, setUser] = useState<string>("No user signed in");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -47,6 +48,11 @@ const App: React.FC = () => {
         document.body.style.backgroundColor = '#61dafb';
       }
     });
+  }
+
+  const handlePlayAudio = () => {
+    chrome.runtime.sendMessage({ event: 'play-audio', isPlay: isPlayAudio });
+    SetIsPlayAudio(!isPlayAudio);
   }
 
   const handleInjectComponents = async () => {
@@ -112,6 +118,12 @@ const App: React.FC = () => {
           <h3>Change Background Color</h3>
           <button onClick={handleChangeBackgroundColor}>
             Change
+          </button>
+        </div>
+        <div className="App-container">
+          <h3>Play Audio</h3>
+          <button onClick={handlePlayAudio}>
+            {isPlayAudio ? "Pause" : "Play"}
           </button>
         </div>
         <div className="App-container">
