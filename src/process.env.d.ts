@@ -6,5 +6,6 @@ declare namespace NodeJS {
     STORAGE_BUCKET: string;
     MESSAGING_SENDER_ID: string;
     APP_ID: string;
+    GITHUB_CLIENT_ID: string;
   }
 }

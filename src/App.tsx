@@ -1,28 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { initializeApp } from 'firebase/app';
 import {
-  getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  signInWithCredential,
-  GoogleAuthProvider
+  GithubAuthProvider,
 } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 
 interface Issue {
   id: string;
   title: string;
-}
-
-const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID
 }
 
 const App: React.FC = () => {
@@ -31,8 +20,6 @@ const App: React.FC = () => {
   const [user, setUser] = useState<string>("No user signed in");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
 
   const getCurrentTab = async () => {
     let queryOptions = { active: true, currentWindow: true };
@@ -51,7 +38,7 @@ const App: React.FC = () => {
   }
 
   const handlePlayAudio = () => {
-    chrome.runtime.sendMessage({ event: 'play-audio', isPlay: isPlayAudio });
+    chrome.runtime.sendMessage({ event: 'playAudio', isPlay: isPlayAudio });
     SetIsPlayAudio(!isPlayAudio);
   }
 
@@ -62,7 +49,7 @@ const App: React.FC = () => {
   }
 
   const handleGrabData = () => {
-    chrome.runtime.sendMessage({ event: 'grab-data' }, (response) => {
+    chrome.runtime.sendMessage({ event: 'grabData' }, (response) => {
       setIssues(response.data);
     });
   }
@@ -78,20 +65,16 @@ const App: React.FC = () => {
   }
 
   const handleLoginWithGoogle = () => {
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
-      if (chrome.runtime.lastError || !token) {
-        console.log("handleLoginWithGoogle -> getAuthToken -> error: ", JSON.stringify(chrome.runtime.lastError));
-        return
-      }
+    chrome.runtime.sendMessage({
+      event: "signIn",
+      type: "google"
+    });
+  }
 
-      const credential = GoogleAuthProvider.credential(null, token);
-      signInWithCredential(auth, credential)
-        .then(result => {
-          console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> result: ', result);
-        })
-        .catch(error => {
-          console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> error: ', error);
-        })
+  const handleLoginWithGitHub = () => {
+    chrome.runtime.sendMessage({
+      event: "signIn",
+      type: "github"
     });
   }
 
@@ -156,7 +139,7 @@ const App: React.FC = () => {
             <button className="App-button" onClick={handleLoginWithGoogle} hidden={user == "No user signed in" ? false : true}>
               Login with Goole
             </button>
-            <button className="App-button" hidden={user == "No user signed in" ? false : true}>
+            <button className="App-button" onClick={handleLoginWithGitHub} hidden={user == "No user signed in" ? false : true}>
               Login with GitHub
             </button>
             <button className="App-button" onClick={handleLogout} hidden={user == "No user signed in" ? true : false}>
