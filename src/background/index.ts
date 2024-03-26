@@ -43,8 +43,6 @@ const getDataFromCurrentWebPage = () => {
 }
 
 const hasDocument = async () => {
-  // Check all windows controlled by the service worker to see if one
-  // of them is the offscreen document with the given path
   const offscreenUrl = chrome.runtime.getURL(offscreenPath);
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
@@ -61,11 +59,9 @@ const closeOffscreenDocument = async () => {
 }
 
 const setupOffscreenDocument = async () => {
-  console.log("Funtion of `setupOffscreenDocument` is called.");
   if (await hasDocument()) {
     return;
   }
-  // create offscreen document
   if (creating) {
     await creating;
   } else {
@@ -83,18 +79,19 @@ const setupOffscreenDocument = async () => {
 
 const signInWithGoogle = () => {
   chrome.identity.getAuthToken({ interactive: true }, (token) => {
+    console.log('signInWithGoogle -> getAuthToken -> token: ', token);
     if (chrome.runtime.lastError || !token) {
-      console.log("handleLoginWithGoogle -> getAuthToken -> error: ", JSON.stringify(chrome.runtime.lastError));
+      console.log("signInWithGoogle -> getAuthToken -> error: ", JSON.stringify(chrome.runtime.lastError));
       return
     }
-    console.log('handleLoginWithGoogle -> getAuthToken -> token: ', token);
+
     const credential = GoogleAuthProvider.credential(null, token);
     signInWithCredential(auth, credential)
       .then(result => {
-        console.log('handleLoginWithGoogle -> signInWithCredential -> result: ', result);
+        console.log('signInWithGoogle -> signInWithCredential -> result: ', result);
       })
       .catch(error => {
-        console.log('handleLoginWithGoogle -> signInWithCredential -> error: ', error);
+        console.log('signInWithGoogle -> signInWithCredential -> error: ', error);
       })
   });
 }
@@ -109,7 +106,7 @@ const getGitHubAuthUrl = () => {
   return `${authUrl}?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
 }
 
-const exchangeCodeForToken = async (code: string) => {
+const exchangeCodeFromGithubForToken = async (code: string) => {
   const response = await fetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: {
@@ -127,30 +124,29 @@ const exchangeCodeForToken = async (code: string) => {
 }
 
 const signinWithGitHub = async () => {
-  console.log("handleLoginWithGitHub -> launchWebAuthFlow");
   chrome.identity.launchWebAuthFlow({
     url: getGitHubAuthUrl(),
     interactive: true
   }, async (redirectUrl) => {
-    console.log("handleLoginWithGitHub -> launchWebAuthFlow -> redirectUrl: ", redirectUrl);
+    console.log("signinWithGitHub -> launchWebAuthFlow -> redirectUrl: ", redirectUrl);
     if (redirectUrl) {
       const params = new URLSearchParams(new URL(redirectUrl).search);
       const code = params.get('code');
       const state = params.get('state');
-      console.log("handleLoginWithGitHub -> launchWebAuthFlow -> code: ", code);
-      console.log("handleLoginWithGitHub -> launchWebAuthFlow -> state: ", state);
+      console.log("signinWithGitHub -> launchWebAuthFlow -> code: ", code);
+      console.log("signinWithGitHub -> launchWebAuthFlow -> state: ", state);
       chrome.storage.local.get(["key"])
       .then( async (result) => {
         if ((code) && (result.key === state)) {
-          const token = await exchangeCodeForToken(code);
-          console.log('handleLoginWithGitHub -> exchangeCodeForToken -> token: ', token);
+          const token = await exchangeCodeFromGithubForToken(code);
+          console.log('signinWithGitHub -> exchangeCodeForToken -> token: ', token);
           const credential = GithubAuthProvider.credential(token);
           signInWithCredential(auth, credential)
           .then(result => {
-            console.log('handleLoginWithGitHub -> signInWithCredential -> result: ', result);
+            console.log('signinWithGitHub -> signInWithCredential -> result: ', result);
           })
           .catch(error => {
-            console.log('handleLoginWithGitHub -> signInWithCredential -> error: ', error);
+            console.log('signinWithGitHub -> signInWithCredential -> error: ', error);
           })
         }
       });
@@ -163,7 +159,6 @@ chrome.runtime.onInstalled.addListener( async() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Background -> onMessage");
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     if (message.event == "grabData") {
       console.log("Background -> onMessage -> event = grab-data");

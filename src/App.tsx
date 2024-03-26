@@ -4,8 +4,7 @@ import './App.css';
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut,
-  GithubAuthProvider,
+  signOut
 } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 
