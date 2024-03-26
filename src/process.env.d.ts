@@ -7,5 +7,6 @@ declare namespace NodeJS {
     MESSAGING_SENDER_ID: string;
     APP_ID: string;
     GITHUB_CLIENT_ID: string;
+    GITHUB_CLIENT_SECRET: string;
   }
 }

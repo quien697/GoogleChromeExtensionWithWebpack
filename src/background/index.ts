@@ -1,4 +1,4 @@
-import { signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithCredential, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 
 // A global promise to avoid concurrency issues
@@ -87,14 +87,14 @@ const signInWithGoogle = () => {
       console.log("handleLoginWithGoogle -> getAuthToken -> error: ", JSON.stringify(chrome.runtime.lastError));
       return
     }
-
+    console.log('handleLoginWithGoogle -> getAuthToken -> token: ', token);
     const credential = GoogleAuthProvider.credential(null, token);
     signInWithCredential(auth, credential)
       .then(result => {
-        console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> result: ', result);
+        console.log('handleLoginWithGoogle -> signInWithCredential -> result: ', result);
       })
       .catch(error => {
-        console.log('handleLoginWithGoogle -> getAuthToken -> signInWithCredential -> error: ', error);
+        console.log('handleLoginWithGoogle -> signInWithCredential -> error: ', error);
       })
   });
 }
@@ -105,7 +105,25 @@ const getGitHubAuthUrl = () => {
   let redirectUri = encodeURIComponent(chrome.identity.getRedirectURL());
   let scope = encodeURIComponent(["user", "user:email"].join(" "));
   let state = crypto.randomUUID();
+  chrome.storage.local.set({ key: state });
   return `${authUrl}?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+}
+
+const exchangeCodeForToken = async (code: string) => {
+  const response = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code: code
+    })
+  });
+  const data = await response.json();
+  return data.access_token;
 }
 
 const signinWithGitHub = async () => {
@@ -113,19 +131,30 @@ const signinWithGitHub = async () => {
   chrome.identity.launchWebAuthFlow({
     url: getGitHubAuthUrl(),
     interactive: true
-  }, (redirectUrl) => {
+  }, async (redirectUrl) => {
     console.log("handleLoginWithGitHub -> launchWebAuthFlow -> redirectUrl: ", redirectUrl);
-
     if (redirectUrl) {
       const params = new URLSearchParams(new URL(redirectUrl).search);
       const code = params.get('code');
       const state = params.get('state');
       console.log("handleLoginWithGitHub -> launchWebAuthFlow -> code: ", code);
       console.log("handleLoginWithGitHub -> launchWebAuthFlow -> state: ", state);
-    } else {
-      console.log("handleLoginWithGitHub -> launchWebAuthFlow -> redirectUrl = undefine");
+      chrome.storage.local.get(["key"])
+      .then( async (result) => {
+        if ((code) && (result.key === state)) {
+          const token = await exchangeCodeForToken(code);
+          console.log('handleLoginWithGitHub -> exchangeCodeForToken -> token: ', token);
+          const credential = GithubAuthProvider.credential(token);
+          signInWithCredential(auth, credential)
+          .then(result => {
+            console.log('handleLoginWithGitHub -> signInWithCredential -> result: ', result);
+          })
+          .catch(error => {
+            console.log('handleLoginWithGitHub -> signInWithCredential -> error: ', error);
+          })
+        }
+      });
     }
-
   });
 }
 

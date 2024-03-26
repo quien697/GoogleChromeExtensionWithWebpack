@@ -16,7 +16,8 @@
   "permissions": [
     "scripting",
     "identity",
-    "offscreen"
+    "offscreen",
+    "storage"
   ],
     "host_permissions": [
       "https://*/*",
