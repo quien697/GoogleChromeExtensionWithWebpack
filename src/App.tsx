@@ -77,6 +77,13 @@ const App: React.FC = () => {
     });
   }
 
+  const handleLoginWithSpotify = () => {
+    chrome.runtime.sendMessage({
+      event: "signIn",
+      type: "spotify"
+    });
+  }
+
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -140,6 +147,9 @@ const App: React.FC = () => {
             </button>
             <button className="App-button" onClick={handleLoginWithGitHub} hidden={user == "No user signed in" ? false : true}>
               Login with GitHub
+            </button>
+            <button className="App-button" onClick={handleLoginWithSpotify} hidden={user == "No user signed in" ? false : true}>
+              Login with Spotify (No Firebase)
             </button>
             <button className="App-button" onClick={handleLogout} hidden={user == "No user signed in" ? true : false}>
               Logout

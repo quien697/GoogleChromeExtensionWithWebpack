@@ -127,7 +127,7 @@ const signinWithGitHub = async () => {
   chrome.identity.launchWebAuthFlow({
     url: getGitHubAuthUrl(),
     interactive: true
-  }, async (redirectUrl) => {
+  }, (redirectUrl) => {
     console.log("signinWithGitHub -> launchWebAuthFlow -> redirectUrl: ", redirectUrl);
     if (redirectUrl) {
       const params = new URLSearchParams(new URL(redirectUrl).search);
@@ -148,6 +148,56 @@ const signinWithGitHub = async () => {
           .catch(error => {
             console.log('signinWithGitHub -> signInWithCredential -> error: ', error);
           })
+        }
+      });
+    }
+  });
+}
+
+const getSpotifyAuthUrl = () => {
+  let authUrl = 'https://accounts.spotify.com/authorize';
+  let clientID = process.env.SPOTIFY_CLIENT_ID;
+  let redirectUri = encodeURIComponent(chrome.identity.getRedirectURL());
+  let scope = encodeURIComponent(["user-read-email"].join(" "));
+  let state = crypto.randomUUID();
+  chrome.storage.local.set({ key: state });
+  return `${authUrl}?client_id=${clientID}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+}
+
+const exchangeCodeFromSpotifyForToken = async (code: string) => {
+  const requestBody = new URLSearchParams();
+  requestBody.append('grant_type', 'authorization_code');
+  requestBody.append('code', code);
+  requestBody.append('redirect_uri', chrome.identity.getRedirectURL());
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${btoa(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET)}`
+    },
+    body: requestBody
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+const signinWithSpotify = () => {
+  chrome.identity.launchWebAuthFlow({
+    url: getSpotifyAuthUrl(),
+    interactive: true
+  }, (redirectUrl) => {
+    console.log("signinWithSpotify -> launchWebAuthFlow -> redirectUrl: ", redirectUrl);
+    if (redirectUrl) {
+      const params = new URLSearchParams(new URL(redirectUrl).search);
+      const code = params.get('code');
+      const state = params.get('state');
+      console.log("signinWithSpotify -> launchWebAuthFlow -> code:", code);
+      console.log("signinWithSpotify -> launchWebAuthFlow -> state:", state);
+      chrome.storage.local.get(["key"])
+      .then( async (result) => {
+        if ((code) && (result.key === state)) {
+          const token = await exchangeCodeFromSpotifyForToken(code);
+          console.log('signinWithSpotify -> exchangeCodeFromSpotifyForToken -> token: ', token);
         }
       });
     }
@@ -193,6 +243,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           break;
         case "github":
           signinWithGitHub();
+          break;
+          case "spotify":
+          signinWithSpotify();
           break;
       }
     }
