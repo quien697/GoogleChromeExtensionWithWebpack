@@ -53,13 +53,15 @@ Using `Offscreen` to handle audio, it will keep playing even if we close extensi
 4. With [Google](https://cloud.google.com/identity-platform/docs/web/google):
    1. Go the the [API's & Services](https://console.cloud.google.com/apis/credentials) page.
    2. Creaete a **OAuth consent screen** with **External** User Type.
-   3. Create a **Credentials** with `OAuth client ID`, **Application type** is `Web application`, and set **Authorized redirect URIs** to `https://myproject.firebaseapp.com/__/auth/handler`.
-   4. Go to the [Identity Providers](https://console.cloud.google.com/customer-identity/providers) page to add new domain, Settings -> SECURITY -> ADD DOMAIN -> `chrome-extension:// my-extension-id`.
-   5. Add **Google** provider.
-   6. Enter your Google **Web Client ID** and **Web Secret**. And ID and secret come from credentials we created in step 3.
-   7. Start coding, using `getAuthToken` to get an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json. (PS: This method only enable auth flows with `Google` identity providers.)
-   8. Get credential from `GoogleAuthProvider`.
-   9. Using `signInWithCredential` to sign in with credentail.
+   3. Create a **Credentials** with `OAuth client ID`, **Application type** is `Chrome Extension`, and set Item ID to `my-extension-id`.
+   4. Create a **Credentials** with `OAuth client ID`, **Application type** is `Web application`, and set **Authorized redirect URIs** to `https://myproject.firebaseapp.com/__/auth/handler`.
+   5. Go to the [Identity Providers](https://console.cloud.google.com/customer-identity/providers) page to add new domain, Settings -> SECURITY -> ADD DOMAIN -> `chrome-extension:// my-extension-id`.
+   6. Add **Google** provider.
+   7. Enter your Google **Web Client ID** and **Web Secret**. And ID and secret come from credentials we created in step 4.
+   8. Start coding, in **Manifest.json**, set **client_id** to `the client ID from Chrome Extension of OAuth 2.0 Client IDs` and **scopes** in **oauth2** section.
+   9. Using `getAuthToken` to get an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json. (PS: This method only enable auth flows with `Google` identity providers.)
+   10. Get credential from `GoogleAuthProvider`.
+   11. Using `signInWithCredential` to sign in with credentail.
 5. With [GitHub](https://cloud.google.com/identity-platform/docs/web/github): 
    1. Create a [OAuth Apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) and set **Authorization callback URL** to `https://my-extension-id.chromiumapp.org/`.
    2. Go to the [Identity Providers](https://console.cloud.google.com/customer-identity/providers) page and add **GitHub** provider.

@@ -1,14 +1,11 @@
 import './Content.css';
+import { IssueProps } from '../interface';
 
-interface Issue {
-  id: string;
-  title: string;
-}
 interface Props {
-  data: Issue[];
+  issues: IssueProps[];
 }
 
-const Content: React.FC<Props> = ({ data }) => {
+const Content: React.FC<Props> = ({ issues }) => {
   const handleCloseWindow = () => {
     const componentContainer = document.getElementById('popup-windows');
     if (componentContainer) {
@@ -25,7 +22,7 @@ const Content: React.FC<Props> = ({ data }) => {
         </div>
         <div className="issues">
           <ul>
-            {data.map(item => (
+            {issues.map(item => (
               <li key={item.id}>{`${item.id} - ${item.title}`}</li>
             ))}
           </ul>

@@ -7,16 +7,14 @@ import {
   signOut
 } from 'firebase/auth';
 import { auth } from './firebaseConfig';
-
-interface Issue {
-  id: string;
-  title: string;
-}
+import { MessageAction, LoginType } from './enum';
+import { IssueProps } from './interface';
 
 const App: React.FC = () => {
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [isPlayAudio, SetIsPlayAudio] = useState<boolean>(false); // true = is playing, otherwise false.
-  const [user, setUser] = useState<string>("No user signed in");
+  const logoutMessage: string = "No user signed in";
+  const [issues, setIssues] = useState<IssueProps[]>([]);
+  const [isPlayAudio, SetIsPlayAudio] = useState<boolean>(false);
+  const [user, setUser] = useState<string>(logoutMessage);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -37,66 +35,56 @@ const App: React.FC = () => {
   }
 
   const handlePlayAudio = () => {
-    chrome.runtime.sendMessage({ event: 'playAudio', isPlay: isPlayAudio });
+    chrome.runtime.sendMessage({
+      action: MessageAction.PlayAudio,
+      isPlay: isPlayAudio
+    });
     SetIsPlayAudio(!isPlayAudio);
   }
 
-  const handleInjectComponents = async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    chrome.tabs.sendMessage(tab.id || 0, issues);
-    window.close();
-  }
-
   const handleGrabData = () => {
-    chrome.runtime.sendMessage({ event: 'grabData' }, (response) => {
+    chrome.runtime.sendMessage({
+      action: MessageAction.GrabDataFromJira
+    }, (response) => {
       setIssues(response.data);
     });
+  }
+
+  const handleInjectComponents = async () => {
+    const tab = await getCurrentTab();
+    chrome.tabs.sendMessage(tab.id || 0, issues);
+    window.close();
   }
 
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("signInWithEmailAndPassword -> user: ", userCredential.user);
+        console.log("App -> handleLogin -> user: ", userCredential.user);
       })
       .catch((error) => {
-        console.log("signInWithEmailAndPassword -> error: ", error);
+        console.log("App -> handleLogin -> error: ", error);
       })
   }
 
-  const handleLoginWithGoogle = () => {
+  const handleThreePartyLogin = (type: LoginType) => {
     chrome.runtime.sendMessage({
-      event: "signIn",
-      type: "google"
-    });
-  }
-
-  const handleLoginWithGitHub = () => {
-    chrome.runtime.sendMessage({
-      event: "signIn",
-      type: "github"
-    });
-  }
-
-  const handleLoginWithSpotify = () => {
-    chrome.runtime.sendMessage({
-      event: "signIn",
-      type: "spotify"
+      action: MessageAction.SignIn,
+      loginType: type
     });
   }
 
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        setUser("Sign-out.");
+        console.log("handleLogout -> Successed");
       }).catch((error) => {
-        setUser("signOut error.");
-        console.log("Sign-out -> error: ", error);
+        console.log("handleLogout -> error: ", error);
       });
   }
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      setUser((user && user.uid) ? user.email! : "No user signed in");
+      setUser((user && user.uid) ? user.email! : logoutMessage);
     });
   });
 
@@ -139,19 +127,31 @@ const App: React.FC = () => {
           <input type="text" placeholder="test@test.com" onChange={(e) => setEmail(e.target.value)}></input>
           <input type="text" placeholder="123456" onChange={(e) => setPassword(e.target.value)}></input>
           <div className="login-buttons">
-            <button className="App-button" onClick={handleLogin} hidden={user == "No user signed in" ? false : true}>
+            <button className="App-button" onClick={handleLogin} hidden={user == logoutMessage ? false : true}>
               Login with Email and PW
             </button>
-            <button className="App-button" onClick={handleLoginWithGoogle} hidden={user == "No user signed in" ? false : true}>
+            <button
+              className="App-button"
+              onClick={() => handleThreePartyLogin(LoginType.Google)}
+              hidden={user == logoutMessage ? false : true}>
               Login with Goole
             </button>
-            <button className="App-button" onClick={handleLoginWithGitHub} hidden={user == "No user signed in" ? false : true}>
+            <button
+              className="App-button"
+              onClick={() => handleThreePartyLogin(LoginType.GitHub)}
+              hidden={user == logoutMessage ? false : true}>
               Login with GitHub
             </button>
-            <button className="App-button" onClick={handleLoginWithSpotify} hidden={user == "No user signed in" ? false : true}>
+            <button
+              className="App-button"
+              onClick={() => handleThreePartyLogin(LoginType.Spotify)}
+              hidden={user == logoutMessage ? false : true}>
               Login with Spotify (No Firebase)
             </button>
-            <button className="App-button" onClick={handleLogout} hidden={user == "No user signed in" ? true : false}>
+            <button
+              className="App-button"
+              onClick={handleLogout}
+              hidden={user == logoutMessage ? true : false}>
               Logout
             </button>
           </div>
