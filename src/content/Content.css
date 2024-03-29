@@ -10,7 +10,7 @@
   max-width: 432px;
 }
 
-.content {
+.content-container .content {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -21,6 +21,7 @@
   margin-top: 9px;
   width: 420px;
   background-color: rgb(247, 249, 252);
+  color: #282c34;
 }
 
 .content-container .content .header {
@@ -35,7 +36,6 @@
   letter-spacing: 0.24px;
   font-size: 24px;
   line-height: 30px;
-  color: #282c34;
 }
 
 .content-container .content .header button {
@@ -45,7 +45,7 @@
   padding: 0 8px;
 }
 
-.content-container .content .issues {
+.content-container .content .user, .content-container .content .issues {
   margin: 0 16px;
 }
 

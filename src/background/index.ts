@@ -1,4 +1,9 @@
-import { signInWithCredential, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import {
+  signInWithCredential,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  onAuthStateChanged
+} from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { MessageAction, LoginType } from '../enum';
 
@@ -291,6 +296,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             handleSigninWithSpotify();
             break;
         }
+        break;
+      case MessageAction.GetAuthenticationStatus:
+        onAuthStateChanged(auth, (user) => {
+          if (user){
+            sendResponse(user);
+          }
+        });
         break;
     }
   });

@@ -1,11 +1,13 @@
 import './Content.css';
+import { User } from 'firebase/auth';
 import { IssueProps } from '../interface';
 
 interface Props {
+  user: User;
   issues: IssueProps[];
 }
 
-const Content: React.FC<Props> = ({ issues }) => {
+const Content: React.FC<Props> = ({ user, issues }) => {
   const handleCloseWindow = () => {
     const componentContainer = document.getElementById('popup-windows');
     if (componentContainer) {
@@ -19,6 +21,9 @@ const Content: React.FC<Props> = ({ issues }) => {
         <div className="header">
           <h3>Popup Page</h3>
           <button onClick={handleCloseWindow}>close</button>
+        </div>
+        <div className="user">
+          <p>User: {user ? user.email : ""}</p>
         </div>
         <div className="issues">
           <ul>

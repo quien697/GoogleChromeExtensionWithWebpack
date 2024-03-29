@@ -52,7 +52,7 @@ const App: React.FC = () => {
 
   const handleInjectComponents = async () => {
     const tab = await getCurrentTab();
-    chrome.tabs.sendMessage(tab.id || 0, issues);
+    chrome.tabs.sendMessage(tab.id || 0, { issues });
     window.close();
   }
 
