@@ -7,7 +7,7 @@ import {
   signOut
 } from 'firebase/auth';
 import { auth } from './firebaseConfig';
-import { MessageAction, LoginType } from './enum';
+import { MessageAction, LoginType, ContentMessageAction } from './enum';
 import { IssueProps } from './interface';
 
 const App: React.FC = () => {
@@ -52,7 +52,13 @@ const App: React.FC = () => {
 
   const handleInjectComponents = async () => {
     const tab = await getCurrentTab();
-    chrome.tabs.sendMessage(tab.id || 0, { issues });
+    chrome.tabs.sendMessage(
+      tab.id || 0,
+      {
+        action: ContentMessageAction.GetDataFromJira,
+        issues
+      }
+      );
     window.close();
   }
 
@@ -71,6 +77,15 @@ const App: React.FC = () => {
       action: MessageAction.SignIn,
       loginType: type
     });
+  }
+
+  const handleUserInfo = async () => {
+    const tab = await getCurrentTab();
+    chrome.tabs.sendMessage(
+      tab.id || 0,
+      { action: ContentMessageAction.GetUserInfo }
+    );
+    window.close();
   }
 
   const handleLogout = () => {
@@ -134,7 +149,7 @@ const App: React.FC = () => {
               className="App-button"
               onClick={() => handleThreePartyLogin(LoginType.Google)}
               hidden={user == logoutMessage ? false : true}>
-              Login with Goole
+              Login with Google
             </button>
             <button
               className="App-button"
@@ -147,6 +162,12 @@ const App: React.FC = () => {
               onClick={() => handleThreePartyLogin(LoginType.Spotify)}
               hidden={user == logoutMessage ? false : true}>
               Login with Spotify (No Firebase)
+            </button>
+            <button
+              className="App-button"
+              onClick={handleUserInfo}
+              hidden={user == logoutMessage ? true : false}>
+              Disply User Info
             </button>
             <button
               className="App-button"

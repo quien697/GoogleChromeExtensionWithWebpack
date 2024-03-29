@@ -11,4 +11,9 @@ enum LoginType {
   Spotify
 }
 
-export { MessageAction, LoginType };
+enum ContentMessageAction {
+  GetUserInfo,
+  GetDataFromJira
+}
+
+export { MessageAction, LoginType, ContentMessageAction };

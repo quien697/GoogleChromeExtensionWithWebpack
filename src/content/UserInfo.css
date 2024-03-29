@@ -1,0 +1,50 @@
+.user-info-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999999999;
+  border: none;
+  height: 100vh;
+  width: 100vw;
+  max-height: 614px;
+  max-width: 432px;
+}
+
+.user-info-container .content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 188px;
+  border: 1px solid rgb(213, 217, 222);
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 9px;
+  margin-top: 9px;
+  width: 420px;
+  background-color: rgb(247, 249, 252);
+  color: #282c34;
+}
+
+.user-info-container .content .header {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px;
+}
+
+.user-info-container .content .header h3 {
+  margin: 8px 0;
+  font-weight: 600;
+  letter-spacing: 0.24px;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.user-info-container .content .header button {
+  background-color: #282c34;
+  color: white;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.user-info-container .content .user {
+  margin: 0 16px;
+}
