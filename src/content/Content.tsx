@@ -3,11 +3,10 @@ import { User } from 'firebase/auth';
 import { IssueProps } from '../interface';
 
 interface Props {
-  user: User;
   issues: IssueProps[];
 }
 
-const Content: React.FC<Props> = ({ user, issues }) => {
+const Content: React.FC<Props> = ({ issues }) => {
   const handleCloseWindow = () => {
     const componentContainer = document.getElementById('popup-windows');
     if (componentContainer) {
@@ -21,9 +20,6 @@ const Content: React.FC<Props> = ({ user, issues }) => {
         <div className="header">
           <h3>Grab Issues From Jira</h3>
           <button onClick={handleCloseWindow}>close</button>
-        </div>
-        <div className="user">
-          <p>User: {user ? user.email : ""}</p>
         </div>
         <div className="issues">
           {issues.length === 0

@@ -15,25 +15,29 @@ chrome.runtime.onMessage.addListener(async (message) => {
   console.log("ContentScript -> Message:", message);
 
   try {
-    const user: User = await new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({
-        action: MessageAction.GetAuthenticationStatus
-      }, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(response);
-        }
-      });
-    });
-
     switch (message.action) {
       case ContentMessageAction.GetDataFromJira:
         console.log("ContentScript -> GetDataFromJira -> issues:", message.issues);
-        createPopupComponents().render(<Content user={user} issues={message.issues} />);
+        createPopupComponents().render(<Content issues={message.issues} />);
         break;
       case ContentMessageAction.GetUserInfo:
-        console.log("ContentScript -> GetUserInfo -> User:", user);
+        console.log("ContentScript -> GetUserInfo");
+
+        const user: User = await new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage({
+            action: MessageAction.GetAuthenticationStatus
+          }, (response) => {
+            console.log("response");
+            if (chrome.runtime.lastError) {
+              console.log("reject");
+              reject(chrome.runtime.lastError);
+            } else {
+              console.log("resolve");
+              resolve(response);
+            }
+          });
+        });
+
         createPopupComponents().render(<UserInfo user={user} />)
         break;
     }
