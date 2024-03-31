@@ -58,21 +58,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Getting Started
 
-1. Install dependencies:
+1. In **Manifest.json**, set **client_id** =  `google-client-id`  in **oauth2** section.
 
-   ```
-   yarn install
-   ```
-
-2. Builds the app for production to the `dist` folder.
-
-   ```
-   yarn build
-   ```
-
-3. In **Manifest.json**, set **client_id** = to `google-client-id`  in **oauth2** section.
-
-4. Create a `env` file for keys
+2. Create a `env` file for keys
 
    ```
    API_KEY = "api-key"
@@ -86,6 +74,18 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
    GITHUB_CLIENT_SECRET = "github-client-secret"
    SPOTIFY_CLIENT_ID = "spotify-client-id"
    SPOTIFY_CLIENT_SECRET = "spotify-client-secret"
+   ```
+
+3. Install dependencies:
+
+   ```
+   yarn install
+   ```
+
+4. Builds the app for production to the `dist` folder.
+
+   ```
+   yarn build
    ```
 
 5. Load an unpacked extension on Google Chrome browser
